@@ -1,11 +1,27 @@
 import { createInterface } from 'node:readline';
 import { stdin, stdout } from 'node:process'
 
-const r1 = createInterface({
-    input: stdin,
-    output: stdout,
-    prompt: "Pokedex > ",
-})
+export function startREPL() {
+    const r1 = createInterface({
+        input: stdin,
+        output: stdout,
+        prompt: "pokedex > ",
+    });
+    //
+    r1.prompt();
+    // 
+    r1.on("line", async (input: string) => {
+        const words = cleanInput(input);
+        if (words.length === 0) {
+            r1.prompt();
+            return;
+        }
+        //
+        const commandName = words[0]
+        console.log(`Your command was: ${commandName}`)
+        r1.prompt();
+    });
+}
 
 export function cleanInput(input: string): string[] {
     return input
@@ -13,18 +29,4 @@ export function cleanInput(input: string): string[] {
         .trim()
         .split(" ")
         .filter((word) => word != "");
-}
-
-
-export function startREPL() {
-    const display = r1.prompt();
-    r1.on("line", (rawInput: string) => {
-        if (rawInput === "") {
-            r1.prompt();
-        }
-        //
-        console.log(`Your command was: ${cleanInput(rawInput)[0]}`)
-        r1.prompt();
-    })
-    //
 }
