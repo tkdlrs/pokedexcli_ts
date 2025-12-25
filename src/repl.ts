@@ -1,5 +1,6 @@
 import { createInterface } from 'node:readline';
 import { stdin, stdout } from 'node:process'
+import { getCommands } from './commands.js';
 
 export function startREPL() {
     const r1 = createInterface({
@@ -18,7 +19,21 @@ export function startREPL() {
         }
         //
         const commandName = words[0]
-        console.log(`Your command was: ${commandName}`)
+        //
+        const commands = getCommands();
+        const cmd = commands[commandName];
+        if (!cmd) {
+            console.log("Unknown command")
+            r1.prompt();
+            return;
+        }
+        //
+        try {
+            cmd.callback(commands);
+        } catch (e) {
+            console.log(e);
+        }
+        //
         r1.prompt();
     });
 }
