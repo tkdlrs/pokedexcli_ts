@@ -1,4 +1,4 @@
-import { cleanInput } from "./repl";
+import { cleanInput } from "./repl.js"; // we don't have something to automatically handle the .ts to .js file extention changes.
 
 import { describe, expect, test } from "vitest";
 
