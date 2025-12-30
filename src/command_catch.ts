@@ -5,17 +5,20 @@ export async function commandCatch(state: State, ...args: string[]) {
         throw new Error("you must provide a pokemon name");
     };
     //
-    const pokemon = args[0];
-    const pokemonData = await state.pokeAPI.fetchPokemon(pokemon);
-    const catchRate = Math.random() * pokemonData.base_experience;
+    const name = args[0];
+    const pokemon = await state.pokeAPI.fetchPokemon(name);
     //
-    console.log(`Throwing a Pokeball at ${pokemon}...`);
-    if (catchRate > 25) {
-        console.log(`${pokemon} was caught!`);
-        state.pokedex[pokemon] = pokemonData;
-    } else {
-        console.log(`${pokemon} escaped!`);
+    console.log(`Throwing a Pokeball at ${pokemon.name}...`);
+    //
+    const res = Math.floor(Math.random() * pokemon.base_experience);
+    if (res > 40) {
+        console.log(`${name} escaped!`);
+        return;
     }
+    //
+    console.log(`${name} was caught!`);
+    console.log("You may now inspect it with the inspect command.");
+    state.caughtPokemon[pokemon.name] = pokemon;
     //
     return;
 }
