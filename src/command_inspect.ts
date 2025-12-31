@@ -1,4 +1,3 @@
-import { InternalEventTargetEventProperties } from "node:events";
 import type { State } from "./state.js";
 
 export async function commandInspect(state: State, ...args: string[]) {
@@ -7,21 +6,20 @@ export async function commandInspect(state: State, ...args: string[]) {
     }
     //
     const name = args[0];
-    if (state.caughtPokemon.hasOwnProperty(name) === false ||
-        typeof state.caughtPokemon[name] === undefined) {
-        console.log("you have not caught that pokemon");
-        return;
+    const pokemon = state.caughtPokemon[name];
+    if (!pokemon) {
+        throw new Error("you have not caught that pokemon");
     }
-    // console.log(state.caughtPokemon[name]);
-    const height = state.caughtPokemon[name].height;
-    const weight = state.caughtPokemon[name].weight;
-    const stats = state.caughtPokemon[name].stats.map(item => {
+    // Get the data of interest
+    const height = pokemon.height;
+    const weight = pokemon.weight;
+    const stats = pokemon.stats.map(item => {
         return {
             name: item.stat.name,
             value: item.base_stat
         }
     });
-    const types = state.caughtPokemon[name].types.map(item => item.type.name)
+    const types = pokemon.types.map(item => item.type.name);
     //
     const pokeData = {
         name,
@@ -30,13 +28,14 @@ export async function commandInspect(state: State, ...args: string[]) {
         stats,
         types,
 
-    }
-    printPokemonData(pokeData);
+    };
+    //
+    console.log(printPokemonData(pokeData));
     //
     return;
 }
 
-export function printPokemonData({ name, height, weight, stats, types }: pokemonData) {
+export function printPokemonData({ name, height, weight, stats, types }: pokemonData): string {
     const printString =
         `Name: ${name}
 Height: ${height}
@@ -46,9 +45,7 @@ ${stats.map(stat => `  -${stat.name}: ${stat.value}`).join('\n')}
 Types: 
 ${types.map(type => `  - ${type}`).join('\n')}`;
     //
-    console.log(printString);
-    //
-    return;
+    return printString;
 }
 
 export type pokemonData = {
